@@ -11,6 +11,7 @@ import org.springframework.web.servlet.mvc.support.*;
 import java.time.*;
 import java.util.*;
 
+@Transactional
 @Controller
 @RequestMapping("sections")
 @SessionAttributes("admin")
