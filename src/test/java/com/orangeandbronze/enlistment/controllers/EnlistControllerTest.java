@@ -15,7 +15,7 @@ import static org.mockito.Mockito.*;
 class EnlistControllerTest {
 
     @Test
-    void enlist_student_in_section() {
+    void enlistOrCancel_enlist_student_in_section() {
 
     }
 
