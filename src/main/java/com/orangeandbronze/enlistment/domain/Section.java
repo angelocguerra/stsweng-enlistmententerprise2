@@ -23,7 +23,7 @@ public class Section {
 
     private int numberOfStudents = 0;
 
-    @Version
+    //@Version
     @ColumnDefault("0")
     private final int version = 0;
 
