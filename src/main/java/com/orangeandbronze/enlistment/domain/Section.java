@@ -25,7 +25,7 @@ public class Section {
 
     //@Version
     @ColumnDefault("0")
-    private final int version = 0;
+    private int version = 0;
 
     @Transient
     private final ReentrantLock lock = new ReentrantLock();
