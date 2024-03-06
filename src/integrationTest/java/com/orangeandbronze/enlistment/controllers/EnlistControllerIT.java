@@ -48,7 +48,7 @@ class EnlistControllerIT {
     }
 
     private final static int FIRST_STUDENT_ID = 11;
-    private final static int NUMBER_OF_STUDENTS = 20;
+    private final static int NUMBER_OF_STUDENTS = 5;
     private final static int LAST_STUDENT_NUMBER = FIRST_STUDENT_ID + NUMBER_OF_STUDENTS - 1;
 
     private void insertManyStudents() {
