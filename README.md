@@ -1,5 +1,5 @@
 # stsweng-enlistmententerprise2
-**STSWENG Major Course Output: Enlistment Enterprise Software**
+**STSWENG Major Course Output: Enlistment Enterprise Software 2**
 
 An enterprise software of a Student Enlistment System.
 
