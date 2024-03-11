@@ -69,7 +69,7 @@ class SectionsController {
         Section section = new Section(sectionId, subject, schedule, room);
         sectionRepo.save(section);
 
-        redirectAttrs.addFlashAttribute("sectionSuccessMessage", "Section ID " + sectionId + " created successfully.");
+        redirectAttrs.addFlashAttribute("sectionSuccessMessage", "Successfully created new section" + sectionId);
 
         return "redirect:sections";
     }
