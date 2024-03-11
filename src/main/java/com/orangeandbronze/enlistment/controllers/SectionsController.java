@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.*;
 import org.springframework.ui.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.*;
+import static org.apache.commons.lang3.Validate.notNull;
+
 
 import java.time.*;
 import java.util.*;
@@ -26,6 +28,7 @@ class SectionsController {
     private RoomRepository roomRepo;
     @Autowired
     private SectionRepository sectionRepo;
+
 
     @ModelAttribute("admin")
     public Admin admin(Integer id) {
@@ -47,7 +50,28 @@ class SectionsController {
     public String createSection(@RequestParam String sectionId, @RequestParam String subjectId, @RequestParam Days days,
                                 @RequestParam String start, @RequestParam String end, @RequestParam String roomName,
                                 RedirectAttributes redirectAttrs) {
-        return "";
+        notNull(sectionId);
+        notNull(subjectId);
+        notNull(days);
+        notNull(start);
+        notNull(end);
+        notNull(roomName);
+
+        Period period = new Period(LocalTime.parse(start), LocalTime.parse(end));
+        Schedule schedule = new Schedule(days, period);
+
+        sectionRepo.findById(sectionId).ifPresent(section -> {
+            throw new IllegalArgumentException("Section ID " + sectionId + " already exists");
+        });
+        Room room = roomRepo.findById(roomName).orElseThrow(() -> new NoSuchElementException("RoomName " + roomName + " not found"));
+        Subject subject = subjectRepo.findById(subjectId).orElseThrow(() -> new NoSuchElementException("SubjectId " + subjectId + " not found"));
+
+        Section section = new Section(sectionId, subject, schedule, room);
+        sectionRepo.save(section);
+
+        redirectAttrs.addFlashAttribute("sectionSuccessMessage", "Section ID " + sectionId + " created successfully.");
+
+        return "redirect:sections";
     }
 
     @ExceptionHandler(EnlistmentException.class)
