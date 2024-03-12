@@ -69,7 +69,8 @@ class EnlistController {
     @PostMapping
     public String enlistOrCancel(@ModelAttribute Student student, @RequestParam String sectionId, @RequestParam UserAction userAction) {
         // Error Checking
-        Section section = sectionRepo.findById(sectionId).get();
+
+        Section section = sectionRepo.findById(sectionId).orElseThrow(() -> new NoSuchElementException("No section for sectionId " + sectionId));
         section.checkIfFull();
         
         // Connect app and db
