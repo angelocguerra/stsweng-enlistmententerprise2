@@ -8,7 +8,7 @@ import javax.persistence.*;
 import java.util.*;
 
 import static com.orangeandbronze.enlistment.domain.TestUtils.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 
@@ -38,18 +38,20 @@ class EnlistControllerTest {
         // When the enlistOrCancel method is called
         String returnVal = controller.enlistOrCancel(student, DEFAULT_SECTION_ID, UserAction.ENLIST);
         // Then...
-        // sectionRepo will fetch the appropriate data associated with the sectionId and instantiate a section object
-        verify(sectionRepo).findById(DEFAULT_SECTION_ID);
-        // reattach student object to Hibernate session
-        verify(session).update(student);
-        // we call the enlist method of the student object and pass in the section
-        verify(student).enlist(section);
-        // studentRepo (DB) will save the student info
-        verify(studentRepo).save(student);
-        // sectionRepo (DB) will save the section info
-        verify(sectionRepo).save(section);
-        // PRG pattern is implemented at the end
-        assertEquals("redirect:enlist", returnVal);
+        assertAll(
+                // sectionRepo will fetch the appropriate data associated with the sectionId and instantiate a section object
+                () -> verify(sectionRepo).findById(DEFAULT_SECTION_ID),
+                // reattach student object to Hibernate session
+                () -> verify(session).update(student),
+                // we call the enlist method of the student object and pass in the section
+                () -> verify(student).enlist(section),
+                // studentRepo (DB) will save the student info
+                () -> verify(studentRepo).save(student),
+                // sectionRepo (DB) will save the section info
+                () -> verify(sectionRepo).save(section),
+                // PRG pattern is implemented at the end
+                () -> assertEquals("redirect:enlist", returnVal)
+        );
     }
 
 
