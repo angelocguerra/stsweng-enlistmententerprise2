@@ -78,8 +78,7 @@ class EnlistController {
 
         // Update the student state
         session.update(student);
-        student.enlist(section);
-
+        userAction.act(student, section);
         // Save to the db
         studentRepo.save(student);
         sectionRepo.save(section);
