@@ -61,7 +61,7 @@ class EnlistControllerIT {
         jdbcTemplate.update("INSERT INTO room (name, capacity) VALUES (?, ?)", roomName, 10);
         jdbcTemplate.update("INSERT INTO subject (subject_id) VALUES (?)", DEFAULT_SUBJECT_ID);
         jdbcTemplate.update("INSERT INTO section (section_id, number_of_students, days, start_time, end_time, room_name, subject_subject_id)" +
-                        " VALUES (?, ?, ?, ?, ?, ?, ?)",
+                        " VALUES (?, ?, ?s, ?, ?, ?, ?)",
                 DEFAULT_SECTION_ID, 0, Days.MTH.ordinal(), LocalTime.of(9, 0), LocalTime.of(10, 0), roomName, DEFAULT_SUBJECT_ID);
 
         // When the POST method on path "/enlist" is invoked, with
@@ -142,18 +142,25 @@ class EnlistControllerIT {
 
     @Test
     void enlist_concurrent_separate_section_instances_representing_same_record_students_beyond_capacity() throws Exception {
+        // Given 20 students and a section with capacity of 1
+        final int capacity = 1;
         insertManyStudents();
-        insertNewDefaultSectionWithCapacity(1);
+        insertNewDefaultSectionWithCapacity(capacity);
+        // When the students enlist concurrently
         startEnlistmentThreads();
-        assertNumberOfStudentsSuccessfullyEnlistedInDefaultSection(1);
+        // Then only one student should be able to enlist successfully
+        assertNumberOfStudentsSuccessfullyEnlistedInDefaultSection(capacity);
     }
 
 
     @Test
     void enlist_concurrently_same_section_enough_capacity() throws Exception {
+        // Given 20 students and a section with capacity for 20
         insertManyStudents();
         insertNewDefaultSectionWithCapacity(NUMBER_OF_STUDENTS);
+        // When the students enlist concurrently
         startEnlistmentThreads();
+        // Then all students will be able to enlist successfully
         assertNumberOfStudentsSuccessfullyEnlistedInDefaultSection(NUMBER_OF_STUDENTS);
     }
 
