@@ -23,9 +23,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
-@AutoConfigureMockMvc
 @Testcontainers
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@AutoConfigureMockMvc
 @SpringBootTest
 class SectionsControllerIT  {
     @Autowired
@@ -33,9 +33,6 @@ class SectionsControllerIT  {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private SectionRepository sectionRepository;
 
     @Autowired
     private AdminRepository adminRepository;
@@ -54,7 +51,38 @@ class SectionsControllerIT  {
 
     @Test
     void createSection_save_to_db() throws Exception {
+        // Given that the section table in the db is empty and the following records are in subject, room, and admin
+        jdbcTemplate.update("INSERT INTO subject (subject_id) VALUES (?)", DEFAULT_SUBJECT_ID);
+        jdbcTemplate.update("INSERT INTO room (name, capacity) VALUES (?, ?)", DEFAULT_ROOM_NAME, 20);
+        jdbcTemplate.update("INSERT INTO admin (id, firstname, lastname) VALUES (?, ?, ?)", 17, "firstName", "lastName");
 
+        // When a post request on path /sections is invoked  with the admin in session and with the following parameters
+        Admin admin = adminRepository.findById(1).orElseThrow(() -> new RuntimeException(""));
+        mockMvc.perform(
+                post("/sections")
+                        .sessionAttr("admin", admin)
+                        .param("sectionId", DEFAULT_SECTION_ID)
+                        .param("subjectId", DEFAULT_SUBJECT_ID)
+                        .param("days", MTH.name())
+                        .param("start", LocalTime.of(9, 0).toString())
+                        .param("end", LocalTime.of(10, 0).toString())
+                        .param("roomName", DEFAULT_ROOM_NAME)
+        );
+
+        // Then the section table should contain a single record whose fields match the parameters
+        final String query = "SELECT COUNT(*) FROM section WHERE section_id = ? AND subject_subject_id = ? AND days = ? AND start_time = ? AND end_time = ? AND room_name = ?";
+        int actualCount = jdbcTemplate.queryForObject(
+                query,
+                Integer.class,
+                DEFAULT_SECTION_ID,
+                DEFAULT_SUBJECT_ID,
+                MTH.ordinal(),
+                LocalTime.of(9, 0),
+                LocalTime.of(10, 0),
+                DEFAULT_ROOM_NAME
+        );
+
+        assertEquals(1, actualCount);
     }
 
 
