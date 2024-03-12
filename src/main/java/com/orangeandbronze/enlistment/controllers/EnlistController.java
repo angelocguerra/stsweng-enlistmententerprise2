@@ -72,6 +72,8 @@ class EnlistController {
         Section section = sectionRepo.findById(sectionId).orElseThrow(() -> new NoSuchElementException(
                 "No section for sectionId " + sectionId));
 
+        section.checkIfFull();
+        
         // Connect app and db
         Session session = entityManager.unwrap(Session.class);
         notNull(session);

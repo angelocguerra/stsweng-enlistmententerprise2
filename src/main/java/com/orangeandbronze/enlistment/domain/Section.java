@@ -82,6 +82,10 @@ public class Section {
         subject.checkPrereqs(copy);
     }
 
+    public void checkIfFull() {
+        room.checkIfAtOrOverCapacity(numberOfStudents);
+    }
+
     /** Locks this object's ReentrantLock **/
     void lock() {
         lock.lock();
