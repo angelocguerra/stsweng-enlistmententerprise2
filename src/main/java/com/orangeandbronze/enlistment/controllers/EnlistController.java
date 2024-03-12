@@ -67,24 +67,24 @@ class EnlistController {
 
     @Retryable(ObjectOptimisticLockingFailureException.class)
     @PostMapping
-    public String enlistOrCancel(@ModelAttribute Student student, @RequestParam String sectionId,
-                         @RequestParam UserAction userAction) {
-        // error check
-        Section section = sectionRepo.findById(sectionId).orElseThrow(() -> new NoSuchElementException("No section for sectionId " + sectionId));
+    public String enlistOrCancel(@ModelAttribute Student student, @RequestParam String sectionId, @RequestParam UserAction userAction) {
+        // Error Checking
+        Section section = sectionRepo.findById(sectionId).orElseThrow(() -> new NoSuchElementException(
+                "No section for sectionId " + sectionId));
 
-        // connect app and db
+        // Connect app and db
         Session session = entityManager.unwrap(Session.class);
         notNull(session);
 
-        // update the student state
+        // Update the student state
         session.update(student);
-        userAction.act(student, section);
+        student.enlist(section);
 
-        // save to the db
+        // Save to the db
         studentRepo.save(student);
         sectionRepo.save(section);
 
-        // redirect to enlistment page
+        // Redirect to enlistment page
         return "redirect:enlist";
     }
 
