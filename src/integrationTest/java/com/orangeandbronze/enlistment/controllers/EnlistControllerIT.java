@@ -61,14 +61,13 @@ class EnlistControllerIT {
         jdbcTemplate.update("INSERT INTO room (name, capacity) VALUES (?, ?)", roomName, 10);
         jdbcTemplate.update("INSERT INTO subject (subject_id) VALUES (?)", DEFAULT_SUBJECT_ID);
         jdbcTemplate.update("INSERT INTO section (section_id, number_of_students, days, start_time, end_time, room_name, subject_subject_id)" +
-                        " VALUES (?, ?, ?s, ?, ?, ?, ?)",
+                        " VALUES (?, ?, ?, ?, ?, ?, ?)",
                 DEFAULT_SECTION_ID, 0, Days.MTH.ordinal(), LocalTime.of(9, 0), LocalTime.of(10, 0), roomName, DEFAULT_SUBJECT_ID);
 
         // When the POST method on path "/enlist" is invoked, with
         // parameters for sectionId matching the record in the DB, and UserAction "ENLIST"
         // with a student object in session corresponding to the student record in the DB
-        Student student = studentRepository.findById(DEFAULT_STUDENT_NUMBER).orElseThrow(() ->
-                new NoSuchElementException("No student with Student No. " + DEFAULT_STUDENT_NUMBER + " found in DB."));
+        Student student = studentRepository.findById(DEFAULT_STUDENT_NUMBER).get();
         mockMvc.perform(post("/enlist").sessionAttr("student", student).param("sectionId", DEFAULT_SECTION_ID)
                 .param("userAction", ENLIST.name()));
 
@@ -129,7 +128,7 @@ class EnlistControllerIT {
         jdbcTemplate.update("INSERT INTO subject (subject_id) VALUES (?)", DEFAULT_SUBJECT_ID);
         jdbcTemplate.update(
                 "INSERT INTO section (section_id, number_of_students, days, start_time, end_time, room_name, subject_subject_id, version)" +
-                        " VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                 DEFAULT_SECTION_ID, 0, Days.MTH.ordinal(), LocalTime.of(9, 0), LocalTime.of(10, 0), roomName, DEFAULT_SUBJECT_ID, 0);
     }
 
@@ -143,13 +142,13 @@ class EnlistControllerIT {
     @Test
     void enlist_concurrent_separate_section_instances_representing_same_record_students_beyond_capacity() throws Exception {
         // Given 20 students and a section with capacity of 1
-        final int capacity = 1;
+        final int CAPACITY = 1;
         insertManyStudents();
-        insertNewDefaultSectionWithCapacity(capacity);
+        insertNewDefaultSectionWithCapacity(CAPACITY);
         // When the students enlist concurrently
         startEnlistmentThreads();
         // Then only one student should be able to enlist successfully
-        assertNumberOfStudentsSuccessfullyEnlistedInDefaultSection(capacity);
+        assertNumberOfStudentsSuccessfullyEnlistedInDefaultSection(CAPACITY);
     }
 
 
