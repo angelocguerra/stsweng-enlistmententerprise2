@@ -12,8 +12,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 
+/**
+ * Test class for EnlistController
+ */
 class EnlistControllerTest {
 
+    /**
+     * Tests the enlistOrCancel method to verify enlistment of a student into a section.
+     */
     @Test
     void enlistOrCancel_enlist_student_in_section() {
         // Given the Controller w/ a student in session, argument is the sectionId that the student wants to enlist in, and UserAction "ENLIST"

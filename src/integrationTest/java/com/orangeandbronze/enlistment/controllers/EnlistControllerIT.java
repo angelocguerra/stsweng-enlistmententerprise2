@@ -28,6 +28,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
 @SpringBootTest
+
+/**
+ * Test class for EnlistController
+ */
 class EnlistControllerIT {
 
     @Autowired
@@ -45,6 +49,11 @@ class EnlistControllerIT {
     private final PostgreSQLContainer container = new PostgreSQLContainer("postgres:14")
             .withDatabaseName(TEST).withUsername(TEST).withPassword(TEST);
 
+    /**
+     * Sets up database properties dynamically.
+     *
+     * @param registry the DynamicPropertyRegistry
+     */
     @DynamicPropertySource
     private static void properties(DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url", () -> "jdbc:tc:postgresql:14:///" + TEST);
@@ -52,6 +61,9 @@ class EnlistControllerIT {
         registry.add("spring.datasource.password", () -> TEST);
     }
 
+    /**
+     * Tests enlistment of a student into a section.
+     */
     @Test
     void enlist_student_in_section() throws Exception {
         // Given the DB already has a record for a student and section
@@ -79,7 +91,9 @@ class EnlistControllerIT {
         assertEquals(1, actualCount);
     }
 
-
+    /**
+     * Tests cancellation of a student's enlistment from a section.
+     */
     @Test
     void cancel_student_in_section() throws Exception {
         // Given in the DB: a student & a section, and a enlistment record existing in student_sections
@@ -132,6 +146,7 @@ class EnlistControllerIT {
                 DEFAULT_SECTION_ID, 0, Days.MTH.ordinal(), LocalTime.of(9, 0), LocalTime.of(10, 0), roomName, DEFAULT_SUBJECT_ID, 0);
     }
 
+
     private void assertNumberOfStudentsSuccessfullyEnlistedInDefaultSection(int expectedCount) {
         int numStudents = jdbcTemplate.queryForObject(
                 "select count(*) from student_sections where sections_section_id = '" +
@@ -151,7 +166,6 @@ class EnlistControllerIT {
         assertNumberOfStudentsSuccessfullyEnlistedInDefaultSection(CAPACITY);
     }
 
-
     @Test
     void enlist_concurrently_same_section_enough_capacity() throws Exception {
         // Given 20 students and a section with capacity for 20
@@ -162,7 +176,6 @@ class EnlistControllerIT {
         // Then all students will be able to enlist successfully
         assertNumberOfStudentsSuccessfullyEnlistedInDefaultSection(NUMBER_OF_STUDENTS);
     }
-
 
 
     private void startEnlistmentThreads() throws Exception {

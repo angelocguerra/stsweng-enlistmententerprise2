@@ -10,6 +10,9 @@ import java.util.concurrent.locks.*;
 import static org.apache.commons.lang3.StringUtils.*;
 import static org.apache.commons.lang3.Validate.*;
 
+/**
+ * Represents a Section in the system.
+ */
 @Entity
 public class Section {
     @Id
@@ -30,6 +33,14 @@ public class Section {
     @Transient
     private final ReentrantLock lock = new ReentrantLock();
 
+    /**
+     * Constructs a Section object with specified attributes.
+     *
+     * @param sectionId the section ID
+     * @param subject   the subject associated with the section
+     * @param schedule  the schedule of the section
+     * @param room      the room where the section takes place
+     */
     public Section(String sectionId, Subject subject, Schedule schedule, Room room) {
         notBlank(sectionId,
                 "sectionId can't be null, empty or whitespace ");
@@ -45,6 +56,15 @@ public class Section {
         this.room = room;
     }
 
+    /**
+     * Constructs a Section object with specified attributes.
+     *
+     * @param sectionId       the section ID
+     * @param subject         the subject associated with the section
+     * @param schedule        the schedule of the section
+     * @param room            the room where the section takes place
+     * @param numberOfStudents the number of students enrolled in the section
+     */
     Section(String sectionId, Subject subject, Schedule schedule, Room room, int numberOfStudents) {
         this(sectionId, subject, schedule, room);
         isTrue(numberOfStudents >= 0,
@@ -63,9 +83,11 @@ public class Section {
         this.schedule.checkOverlap(other.schedule);
     }
 
+
     int getNumberOfStudents() {
         return numberOfStudents;
     }
+
 
     void incrementNumberOfStudents() {
         room.checkIfAtOrOverCapacity(numberOfStudents);
