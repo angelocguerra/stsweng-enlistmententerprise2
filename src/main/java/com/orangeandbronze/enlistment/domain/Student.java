@@ -3,6 +3,10 @@ package com.orangeandbronze.enlistment.domain;
 import javax.persistence.*;
 import java.util.*;
 import static org.apache.commons.lang3.Validate.*;
+
+/**
+ * Represents a Student in the system.
+ */
 @Entity
 public class Student {
     @Id
@@ -14,6 +18,15 @@ public class Student {
     @ManyToMany
     private final Collection<Subject> subjectsTaken = new HashSet<>();
 
+    /**
+     * Constructs a Student object with specified attributes.
+     *
+     * @param studentNumber the student number
+     * @param firstname     the first name of the student
+     * @param lastname      the last name of the student
+     * @param sections      the sections the student is enrolled in
+     * @param subjectsTaken the subjects taken by the student
+     */
     Student(int studentNumber, String firstname, String lastname, Collection<Section> sections, Collection<Subject> subjectsTaken) {
         isTrue (studentNumber >= 0,
                 "studentNumber can't be negative, was: " + studentNumber);
@@ -30,10 +43,25 @@ public class Student {
         this.subjectsTaken.removeIf(Objects::isNull);
     }
 
+    /**
+     * Constructs a Student object with specified attributes.
+     *
+     * @param studentNumber the student number
+     * @param firstname     the first name of the student
+     * @param lastname      the last name of the student
+     */
     Student(int studentNumber, String firstname, String lastname) {
         this(studentNumber, firstname, lastname, Collections.emptyList(), Collections.emptyList());
     }
 
+    /**
+     * Constructs a Student object with specified attributes.
+     *
+     * @param studentNumber the student number
+     * @param firstname     the first name of the student
+     * @param lastname      the last name of the student
+     * @param sections      the sections the student is enrolled in
+     */
     Student(int studentNumber, String firstname, String lastname, Collection<Section> sections) {
         this(studentNumber, firstname, lastname, sections, Collections.emptyList());
     }

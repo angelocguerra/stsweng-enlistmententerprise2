@@ -24,6 +24,10 @@ import static org.apache.commons.lang3.Validate.notNull;
 @Controller
 @RequestMapping("enlist")
 @SessionAttributes("student")
+
+/**
+ * Controller class that is responsible for handling enlistment-related actions.
+ */
 class EnlistController {
 
     @Autowired
@@ -33,6 +37,12 @@ class EnlistController {
     @PersistenceContext
     private EntityManager entityManager;
 
+    /**
+     * Initializes the student model attribute.
+     *
+     * @param   model           the model to be initialized
+     * @param   studentNumber   the student number
+     */
     @ModelAttribute
     public void initStudent(Model model, Integer studentNumber) {
         Student student = (Student) model.getAttribute("student");
@@ -50,12 +60,24 @@ class EnlistController {
 
     }
 
+    /**
+     * Handles LoginException by redirecting to the login page.
+     *
+     * @return a RedirectView object pointing to the login page
+     */
     @ExceptionHandler(LoginException.class)
     public RedirectView home() {
         return new RedirectView("login.html");
     }
 
 
+    /**
+     * Displays the available sections for enlistment.
+     *
+     * @param model     the model containing enlisted and available sections
+     * @param student   the student object
+     * @return the view name for enlistment page
+     */
     @GetMapping
     public String showSections(Model model, @ModelAttribute Student student) {
         var enlistedSections = student.getSections();
@@ -65,6 +87,14 @@ class EnlistController {
         return "enlist";
     }
 
+    /**
+     * Handles enlistment or cancellation of a student for a section.
+     *
+     * @param student    the student object
+     * @param sectionId  the ID of the section to enlist or cancel
+     * @param userAction the action to perform (ENLIST or CANCEL)
+     * @return the redirect URL to the enlistment page
+     */
     @Retryable(ObjectOptimisticLockingFailureException.class)
     @PostMapping
     public String enlistOrCancel(@ModelAttribute Student student, @RequestParam String sectionId, @RequestParam UserAction userAction) {
@@ -89,6 +119,13 @@ class EnlistController {
     }
 
 
+    /**
+     * Handles EnlistmentException by redirecting to the enlistment page and displaying the error message.
+     *
+     * @param redirectAttrs the redirect attributes
+     * @param e             the EnlistmentException
+     * @return the redirect URL to the enlistment page
+     */
     @ExceptionHandler(EnlistmentException.class)
     public String handleException(RedirectAttributes redirectAttrs, EnlistmentException e) {
         redirectAttrs.addFlashAttribute("enlistmentExceptionMessage", e.getMessage());
@@ -96,30 +133,59 @@ class EnlistController {
     }
 
 
+    /**
+     * Setter method for sectionRepo dependency injection.
+     *
+     * @param sectionRepo the SectionRepository object
+     */
     void setSectionRepo(SectionRepository sectionRepo) {
         this.sectionRepo = sectionRepo;
     }
 
+    /**
+     * Setter method for studentRepo dependency injection.
+     *
+     * @param studentRepo the StudentRepository object
+     */
     void setStudentRepo(StudentRepository studentRepo) {
         this.studentRepo = studentRepo;
     }
 
+    /**
+     * Setter method for entityManager dependency injection.
+     *
+     * @param entityManager the EntityManager object
+     */
     void setEntityManager(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
 
 }
 
+/**
+ * Enum representing user actions (ENLIST or CANCEL) for enlistment.
+ */
 enum UserAction {
     ENLIST(Student::enlist),
     CANCEL(Student::cancel);
 
     private final BiConsumer<Student, Section> action;
 
+    /**
+     * Constructor for UserAction enum.
+     *
+     * @param action the action to be performed
+     */
     UserAction(BiConsumer<Student, Section> action) {
         this.action = action;
     }
 
+    /**
+     * Performs the action for a given student and section.
+     *
+     * @param student the student object
+     * @param section the section object
+     */
     void act(Student student, Section section) {
         action.accept(student, section);
     }

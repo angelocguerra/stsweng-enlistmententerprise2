@@ -41,17 +41,15 @@ class SectionsControllerTest {
         // - it should retrieve the entities from the db, create a new section
         String returnVal = controller.createSection(DEFAULT_SECTION_ID, DEFAULT_SUBJECT_ID, MTH, "08:30", "10:00", DEFAULT_ROOM_NAME, redirectAttrs);
 
-        // - save the section in the db
-        verify(subjectRepo).findById(DEFAULT_SUBJECT_ID);
-        verify(roomRepo).findById(DEFAULT_ROOM_NAME);
-
-        verify(sectionRepo).save(section);
-
-        // - set a flash attribute called "sectionSuccessMessage" with the message "Successfully created new section " + sectionId
-        verify(redirectAttrs).addFlashAttribute("sectionSuccessMessage", "Successfully created new section" + DEFAULT_SECTION_ID);
-
-        // - return the string value "redirect:sections" to redirect to the GET method
-        assertEquals("redirect:sections", returnVal);
-
+        assertAll(
+                // - save the section in the db
+                () -> verify(subjectRepo).findById(DEFAULT_SUBJECT_ID),
+                () -> verify(roomRepo).findById(DEFAULT_ROOM_NAME),
+                () -> verify(sectionRepo).save(section),
+                // - set a flash attribute called "sectionSuccessMessage" with the message "Successfully created new section " + sectionId
+                () -> verify(redirectAttrs).addFlashAttribute("sectionSuccessMessage", "Successfully created new section" + DEFAULT_SECTION_ID),
+                // - return the string value "redirect:sections" to redirect to the GET method
+                () -> assertEquals("redirect:sections", returnVal)
+        );
     }
 }
