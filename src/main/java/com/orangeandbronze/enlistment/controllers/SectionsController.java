@@ -28,6 +28,8 @@ class SectionsController {
     private RoomRepository roomRepo;
     @Autowired
     private SectionRepository sectionRepo;
+    @Autowired
+    private FacultyRepository facultyRepo;
 
 
     @ModelAttribute("admin")
@@ -43,12 +45,13 @@ class SectionsController {
         model.addAttribute("subjects", subjectRepo.findAll());
         model.addAttribute("rooms", roomRepo.findAll());
         model.addAttribute("sections", sectionRepo.findAll());
+        model.addAttribute("instructors", facultyRepo.findAll());
         return "sections";
     }
 
     @PostMapping
     public String createSection(@RequestParam String sectionId, @RequestParam String subjectId, @RequestParam Days days,
-                                @RequestParam String start, @RequestParam String end, @RequestParam String roomName,
+                                @RequestParam String start, @RequestParam String end, @RequestParam String roomName,@RequestParam int facultyNumber,
                                 RedirectAttributes redirectAttrs) {
         notNull(sectionId);
         notNull(subjectId);
@@ -65,8 +68,8 @@ class SectionsController {
         });
         Room room = roomRepo.findById(roomName).orElseThrow(() -> new NoSuchElementException("RoomName " + roomName + " not found"));
         Subject subject = subjectRepo.findById(subjectId).orElseThrow(() -> new NoSuchElementException("SubjectId " + subjectId + " not found"));
-
-        Section section = new Section(sectionId, subject, schedule, room);
+        Faculty instructor = facultyRepo.findById(facultyNumber).orElseThrow(() -> new NoSuchElementException("no faculty found for facultyNumber " + facultyNumber));
+        Section section = new Section(sectionId, subject, schedule, room, instructor);
         sectionRepo.save(section);
 
         redirectAttrs.addFlashAttribute("sectionSuccessMessage", "Successfully created new section" + sectionId);
@@ -90,6 +93,10 @@ class SectionsController {
 
     void setRoomRepo(RoomRepository roomRepo) {
         this.roomRepo = roomRepo;
+    }
+
+    void setFacultyRepo(FacultyRepository facultyRepository) {
+        this.facultyRepo = facultyRepository;
     }
 
     void setAdminRepo(AdminRepository adminRepo) {

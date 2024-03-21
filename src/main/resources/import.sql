@@ -20,4 +20,5 @@ INSERT INTO room_sections (room_name, sections_section_id) VALUES ('AS204', 'ABC
 INSERT INTO student (student_number, firstname, lastname) VALUES
 (1, 'Meredith', 'Grey'), (2, 'Alex', 'Karev'), (3, 'Derek', 'Shepherd');
 
---INSERT INTO faculty (faculty_number) VALUES (1), (2), (3), (4), (5);
+INSERT INTO faculty (faculty_number) VALUES (1), (2), (3), (4), (5);
+

@@ -23,6 +23,7 @@ class SectionsControllerTest {
         SubjectRepository subjectRepo = mock(SubjectRepository.class);
         RoomRepository roomRepo = mock(RoomRepository.class);
         RedirectAttributes redirectAttrs = mock(RedirectAttributes.class);
+        FacultyRepository facultyRepository = mock(FacultyRepository.class);
 
         // When the controller receives the arguments
 
@@ -36,10 +37,12 @@ class SectionsControllerTest {
         Room room = newDefaultRoom();
         when(roomRepo.findById(DEFAULT_ROOM_NAME)).thenReturn(Optional.of(room));
         controller.setRoomRepo(roomRepo);
+        when(facultyRepository.findById(DEFAULT_FACULTY_NUMBER)).thenReturn(Optional.of(DEFAULT_FACULTY));
+        controller.setFacultyRepo(facultyRepository);
 
         // Then
         // - it should retrieve the entities from the db, create a new section
-        String returnVal = controller.createSection(DEFAULT_SECTION_ID, DEFAULT_SUBJECT_ID, MTH, "08:30", "10:00", DEFAULT_ROOM_NAME, redirectAttrs);
+        String returnVal = controller.createSection(DEFAULT_SECTION_ID, DEFAULT_SUBJECT_ID, MTH, "08:30", "10:00", DEFAULT_ROOM_NAME, DEFAULT_FACULTY_NUMBER, redirectAttrs);
 
         assertAll(
                 // - save the section in the db

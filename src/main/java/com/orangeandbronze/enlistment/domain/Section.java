@@ -24,6 +24,9 @@ public class Section {
     @ManyToOne
     private final Room room;
 
+    @ManyToOne
+    private final Faculty instructor;
+
     private int numberOfStudents = 0;
 
     @Version
@@ -41,7 +44,7 @@ public class Section {
      * @param schedule  the schedule of the section
      * @param room      the room where the section takes place
      */
-    public Section(String sectionId, Subject subject, Schedule schedule, Room room) {
+    public Section(String sectionId, Subject subject, Schedule schedule, Room room, Faculty instructor) {
         notBlank(sectionId,
                 "sectionId can't be null, empty or whitespace ");
         notNull(subject);
@@ -49,11 +52,13 @@ public class Section {
                 "sectionId must be alphanumeric, was: "
                         + sectionId);
         notNull(room);
+        notNull(instructor);
         this.sectionId = sectionId;
         this.subject = subject;
         this.schedule = schedule;
         room.addSection(this);
         this.room = room;
+        this.instructor = instructor;
     }
 
     /**
@@ -65,8 +70,8 @@ public class Section {
      * @param room            the room where the section takes place
      * @param numberOfStudents the number of students enrolled in the section
      */
-    Section(String sectionId, Subject subject, Schedule schedule, Room room, int numberOfStudents) {
-        this(sectionId, subject, schedule, room);
+    Section(String sectionId, Subject subject, Schedule schedule, Room room, Faculty instructor, int numberOfStudents) {
+        this(sectionId, subject, schedule, room, instructor);
         isTrue(numberOfStudents >= 0,
                 "numberOfStudents must be non-negative, was: " + numberOfStudents);
         this.numberOfStudents = numberOfStudents;
@@ -160,5 +165,6 @@ public class Section {
         subject = null;
         schedule = null;
         room = null;
+        instructor = null;
     }
 }

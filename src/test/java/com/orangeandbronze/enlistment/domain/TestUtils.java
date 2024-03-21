@@ -15,7 +15,7 @@ public class TestUtils {
     public static final int DEFAULT_STUDENT_NUMBER = 10;
     public static final String DEFAULT_ROOM_NAME = "X";
     public static final int DEFAULT_FACULTY_NUMBER = 1000;
-//    public static final Faculty DEFAULT_FACULTY = new Faculty(DEFAULT_FACULTY_NUMBER);
+ public static final Faculty DEFAULT_FACULTY = new Faculty(DEFAULT_FACULTY_NUMBER, "firstname", "lastname");
 
 //    public static Faculty newFaculty(int facultyNumber) {
 //        return new Faculty(facultyNumber);
@@ -40,10 +40,18 @@ public class TestUtils {
     }
 
     public static Section newDefaultSection() {
-        return new Section(DEFAULT_SECTION_ID, DEFAULT_SUBJECT, MTH830to10, new Room(DEFAULT_ROOM_NAME, 10));
+        return new Section(DEFAULT_SECTION_ID, DEFAULT_SUBJECT, MTH830to10, new Room(DEFAULT_ROOM_NAME, 10), DEFAULT_FACULTY);
     }
 
     public static Room newDefaultRoom() {
         return new Room(DEFAULT_ROOM_NAME, 10);
+    }
+
+    public static Faculty newDefaultFaculty() {
+        return new Faculty(DEFAULT_FACULTY_NUMBER, "firstname", "lastname");
+    }
+
+    public static Faculty newFaculty(int facultyNumber) {
+        return new Faculty(facultyNumber, "firstname", "lastname");
     }
 }
