@@ -30,6 +30,18 @@ public class Faculty {
         this.lastname = lastname;
     }
 
+    public int getFacultyNumber() {
+        return facultyNumber;
+    }
+
+    public String getFirstname() {
+        return firstname;
+    }
+
+    public String getLastname() {
+        return lastname;
+    }
+
     @Override
     public String toString() {
         return "Faculty# " + facultyNumber;
@@ -40,12 +52,12 @@ public class Faculty {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Faculty faculty = (Faculty) o;
-        return facultyNumber == faculty.facultyNumber && Objects.equals(firstname, faculty.firstname) && Objects.equals(lastname, faculty.lastname) && Objects.equals(sections, faculty.sections);
+        return facultyNumber == faculty.facultyNumber && Objects.equals(firstname, faculty.firstname) && Objects.equals(lastname, faculty.lastname);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(facultyNumber, firstname, lastname, sections);
+        return Objects.hash(facultyNumber, firstname, lastname);
     }
 
     // For JPA/Hibernate, do not delete

@@ -76,11 +76,15 @@
                                 <tr>
                                     <th></th>
                                     <th>Faculty #</th>
+                                    <th>Last Name</th>
+                                    <th>First Name</th>
                                 </tr>
                                 <tr th:each="instructor : ${instructors}">
                                     <td><input form="new_section" name="facultyNumber"
                                                th:value="${instructor.facultyNumber}" type="radio"></td>
-                                    <td th:text="${instructor.facultyNumber}">1234</td>
+                                    <td th:text="${instructor.facultyNumber}"></td>
+                                    <td th:text="${instructor.lastname}"></td>
+                                    <td th:text="${instructor.firstname}"></td>
                                 </tr>
                             </table>
                         </div>
