@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 /**
  * Test class for EnlistController
  */
-class EnlistControllerIT {
+class EnlistControllerIT  extends AbstractControllerIT {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -42,25 +42,6 @@ class EnlistControllerIT {
 
     @Autowired
     private StudentRepository studentRepository;
-
-    private final static String TEST = "test";
-
-    @Container
-    private final PostgreSQLContainer container = new PostgreSQLContainer("postgres:14")
-            .withDatabaseName(TEST).withUsername(TEST).withPassword(TEST);
-
-    /**
-     * Sets up database properties dynamically.
-     *
-     * @param registry the DynamicPropertyRegistry
-     */
-    @DynamicPropertySource
-    private static void properties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", () -> "jdbc:tc:postgresql:14:///" + TEST);
-        registry.add("spring.datasource.username", () -> TEST);
-        registry.add("spring.datasource.password", () -> TEST);
-        registry.add("spring.jpa.hibernate.ddl-auto", () -> "create");
-    }
 
     /**
      * Tests enlistment of a student into a section.
