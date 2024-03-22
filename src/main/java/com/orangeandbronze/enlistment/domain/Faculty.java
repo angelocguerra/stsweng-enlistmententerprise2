@@ -7,8 +7,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 
-import static org.apache.commons.lang3.Validate.isTrue;
-import static org.apache.commons.lang3.Validate.notBlank;
+import static org.apache.commons.lang3.Validate.*;
 
 @Entity
 public class Faculty {
@@ -29,6 +28,19 @@ public class Faculty {
         this.firstname = firstname;
         this.lastname = lastname;
     }
+
+    public void addSection(Section section) {
+        notNull(section);
+        checkForScheduleConflict(section);
+        sections.add(section);
+    }
+
+    private void checkForScheduleConflict (Section section) {
+        for (Section s : sections) {
+            s.checkForScheduleConflict(section);
+        }
+    }
+
 
     public int getFacultyNumber() {
         return facultyNumber;

@@ -70,6 +70,9 @@ class SectionsController {
         Subject subject = subjectRepo.findById(subjectId).orElseThrow(() -> new NoSuchElementException("SubjectId " + subjectId + " not found"));
         Faculty instructor = facultyRepo.findById(facultyNumber).orElseThrow(() -> new NoSuchElementException("no faculty found for facultyNumber " + facultyNumber));
         Section section = new Section(sectionId, subject, schedule, room, instructor);
+
+        instructor.addSection(section);
+
         sectionRepo.save(section);
 
         redirectAttrs.addFlashAttribute("sectionSuccessMessage", "Successfully created new section" + sectionId);
