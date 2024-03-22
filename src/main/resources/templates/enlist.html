@@ -31,8 +31,7 @@
                     <th>Subject</th>
                     <th>Schedule</th>
                     <th>Room</th>
-                    <!--th>Faculty</th-->
-                    <th></th>
+                    <th>Faculty</th>
                 </tr>
 
                 <tr th:each="sectionInfo : ${enlistedSections}"
@@ -41,7 +40,7 @@
                     <td th:text="${sectionInfo.subject}">${sectionInfo.subjectId}</td>
                     <td th:text="${sectionInfo.schedule}">${sectionInfo.schedule}</td>
                     <td th:text="${sectionInfo.room}">${sectionInfo.roomName}</td>
-                    <!--td>${sectionInfo.faculty}</td-->
+                    <td th:text="${sectionInfo.instructor}">${sectionInfo.instructor}</td>
                     <td>
                         <form action="enlist" method="post">
                             <input name="sectionId" th:value="${sectionInfo.sectionId}"
@@ -64,8 +63,7 @@
                     <th>Subject</th>
                     <th>Schedule</th>
                     <th>Room</th>
-                    <!--th>Faculty</th-->
-                    <th></th>
+                    <th>Faculty</th>
                 </tr>
                 <tr th:each="sectionInfo : ${availableSections}"
                     th:id="${sectionInfo.sectionId}">
@@ -73,7 +71,7 @@
                     <td th:text="${sectionInfo.subject}">${sectionInfo.subjectId}</td>
                     <td th:text="${sectionInfo.schedule}">${sectionInfo.schedule}</td>
                     <td th:text="${sectionInfo.room}">${sectionInfo.roomName}</td>
-                    <!--td>${sectionInfo.faculty}</td-->
+                    <td th:text="${sectionInfo.instructor}">${sectionInfo.instructor}</td>
                     <td>
                         <form action="enlist" method="post">
                             <input name="sectionId" th:value="${sectionInfo.sectionId}"

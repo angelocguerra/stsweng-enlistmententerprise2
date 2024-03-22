@@ -56,7 +56,7 @@ public class Faculty {
 
     @Override
     public String toString() {
-        return "Faculty# " + facultyNumber + ": " + lastname + ", " + firstname;
+        return lastname + ", " + firstname;
     }
 
     @Override
