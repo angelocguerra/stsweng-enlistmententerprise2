@@ -26,7 +26,7 @@ class StudentTest {
         // Then both sections should be found in the student & no other sections
         Collection<Section> sections = student.getSections();
         assertAll(
-                () -> assertTrue(sections.containsAll(List.of(sec1, sec2))),
+                () -> assertTrue(sections.containsAll(Arrays.asList(sec1, sec2))),
                 () -> assertEquals(2, sections.size())
         );
     }
@@ -144,7 +144,7 @@ class StudentTest {
         Section sec1 = new Section("A", new Subject("D"), MTH830to10, new Room("X", 10), newFaculty(1001), INITIAL_NUMBER_OF_STUDENTS);
         Section sec2 = new Section("B", new Subject("E"), TF830to10, new Room("Y", 10),  newFaculty(1002),INITIAL_NUMBER_OF_STUDENTS);
         Section sectionToBeCanceled = new Section("C", new Subject("F"), new Schedule(WS, H0830), new Room("Z", 10), newFaculty(1003), INITIAL_NUMBER_OF_STUDENTS);
-        Student student = newStudent(1, List.of(sec1, sec2, sectionToBeCanceled));
+        Student student = newStudent(1, Arrays.asList(sec1, sec2, sectionToBeCanceled));
         // When the student cancels one section
         student.cancel(sectionToBeCanceled);
         // Then the section will no longer be found with the student
@@ -165,13 +165,13 @@ class StudentTest {
         Section sec1 = new Section("A", new Subject("D"), MTH830to10, new Room("X", 10),newFaculty(1001), INITIAL_NUMBER_OF_STUDENTS);
         Section sec2 = new Section("B", new Subject("E"), TF830to10, new Room("Y", 10), newFaculty(1002), INITIAL_NUMBER_OF_STUDENTS);
         Section sectionToBeCanceled = new Section("C", new Subject("F"), new Schedule(WS, H0830), new Room("Z", 10), newFaculty(1003),INITIAL_NUMBER_OF_STUDENTS);
-        Student student = newStudent(1, List.of(sec1, sec2));
+        Student student = newStudent(1, Arrays.asList(sec1, sec2));
         // When a student cancels a section that the student hasn't enlisted in
         student.cancel(sectionToBeCanceled);
         // The system will do nothing, student's sections unchanged, number of students of sections unchanged
         Collection<Section> sections = student.getSections();
         assertAll(
-                () -> assertTrue(sections.containsAll(List.of(sec1, sec2))),
+                () -> assertTrue(sections.containsAll(Arrays.asList(sec1, sec2))),
                 () -> assertFalse(sections.contains(sectionToBeCanceled)),
                 () -> assertEquals(2, sections.size()),
                 () -> assertEquals(INITIAL_NUMBER_OF_STUDENTS, sec1.getNumberOfStudents()),
@@ -196,9 +196,9 @@ class StudentTest {
         // Given section & student where prereqs taken
         Subject prereq1 = new Subject("prereq1");
         Subject prereq2 = new Subject("prereq2");
-        Subject subject = new Subject("subject", List.of(prereq1, prereq2));
+        Subject subject = new Subject("subject", Arrays.asList(prereq1, prereq2));
         Subject otherSubject = new Subject("otherSubject");
-        List<Subject> subjectsTaken = List.of(prereq1, prereq2, otherSubject);
+        List<Subject> subjectsTaken = Arrays.asList(prereq1, prereq2, otherSubject);
         Student student = newStudent(1, Collections.emptyList(), subjectsTaken);
         Section section = new Section(DEFAULT_SECTION_ID, subject, MTH830to10, new Room("room", 10), DEFAULT_FACULTY );
         // When student enlists
@@ -217,9 +217,9 @@ class StudentTest {
         Subject prereq2 = new Subject("prereq2");
         Subject prereq3 = new Subject("prereq3");
         Subject prereq4 = new Subject("prereq4");
-        Subject subject = new Subject("subject", List.of(prereq1, prereq2, prereq3, prereq4));
+        Subject subject = new Subject("subject", Arrays.asList(prereq1, prereq2, prereq3, prereq4));
         Subject otherSubject = new Subject("otherSubject");
-        List<Subject> subjectsTaken = List.of(prereq1, prereq2, otherSubject);
+        List<Subject> subjectsTaken = Arrays.asList(prereq1, prereq2, otherSubject);
         Student student = newStudent(1, Collections.emptyList(), subjectsTaken);
         Section section = new Section(DEFAULT_SECTION_ID, subject, MTH830to10, new Room("room", 10), DEFAULT_FACULTY);
         // When student enlists
