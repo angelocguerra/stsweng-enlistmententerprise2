@@ -13,8 +13,8 @@ import static org.apache.commons.lang3.Validate.*;
 public class Faculty {
     @Id
     private final int facultyNumber;
-    private String firstname;
-    private String lastname;
+    private final String firstname;
+    private final String lastname;
     @OneToMany
     private final Collection<Section> sections = new HashSet<>();
 
@@ -75,5 +75,7 @@ public class Faculty {
     // For JPA/Hibernate, do not delete
     private Faculty() {
         facultyNumber = -1;
+        this.lastname = null;
+        this.firstname = null;
     }
 }
