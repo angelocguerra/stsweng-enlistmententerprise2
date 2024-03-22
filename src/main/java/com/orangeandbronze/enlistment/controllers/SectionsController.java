@@ -68,7 +68,7 @@ class SectionsController {
         });
         Room room = roomRepo.findById(roomName).orElseThrow(() -> new NoSuchElementException("RoomName " + roomName + " not found"));
         Subject subject = subjectRepo.findById(subjectId).orElseThrow(() -> new NoSuchElementException("SubjectId " + subjectId + " not found"));
-        Faculty instructor = facultyRepo.findById(facultyNumber).orElseThrow(() -> new NoSuchElementException("no faculty found for facultyNumber " + facultyNumber));
+        Faculty instructor = facultyRepo.findById(facultyNumber).orElseThrow(() -> new NoSuchElementException("FacultyNumber"+ facultyNumber + "not found"));
         Section section = new Section(sectionId, subject, schedule, room, instructor);
 
         instructor.addSection(section);

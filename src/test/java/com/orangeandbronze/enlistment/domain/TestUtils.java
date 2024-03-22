@@ -44,10 +44,6 @@ public class TestUtils {
         return new Room(DEFAULT_ROOM_NAME, 10);
     }
 
-    public static Faculty newDefaultFaculty() {
-        return new Faculty(DEFAULT_FACULTY_NUMBER, "firstname", "lastname");
-    }
-
     public static Faculty newFaculty(int facultyNumber) {
         return new Faculty(facultyNumber, "firstname", "lastname");
     }
