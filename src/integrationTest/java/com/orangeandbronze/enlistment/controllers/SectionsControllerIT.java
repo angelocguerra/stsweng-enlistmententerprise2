@@ -56,11 +56,17 @@ class SectionsControllerIT  {
     void createSection_save_to_db() throws Exception {
 
         // Given that the section table in the db is empty and the following records are in subject, room, and admin
+        final String sectionId = "sectionId";
+        final String subjectId = "subjectId";
+        final Days days = MTH;
+        final String start = "09:00";
+        final String end = "10:00";
+        final String roomName = "roomName";
 
-        jdbcTemplate.update("INSERT INTO subject (subject_id) VALUES (?)", DEFAULT_SUBJECT_ID);
-        jdbcTemplate.update("INSERT INTO room (name, capacity) VALUES (?, ?)", DEFAULT_ROOM_NAME, 20);
+        jdbcTemplate.update("INSERT INTO subject (subject_id) VALUES (?)", subjectId);
+        jdbcTemplate.update("INSERT INTO room (name, capacity) VALUES (?, ?)", roomName, 20);
         jdbcTemplate.update("INSERT INTO admin (id, firstname, lastname) VALUES (?, ?, ?)", 17, "firstName", "lastName");
-        jdbcTemplate.update("INSERT INTO faculty (faculty_number) VALUES (?)", DEFAULT_FACULTY_NUMBER);
+        jdbcTemplate.update("INSERT INTO faculty (faculty_number, firstname, lastname )VALUES (?, ?, ?)", DEFAULT_FACULTY_NUMBER, "firstname", "lastname");
 
         // When a post request on path /sections is invoked  with the admin in session and with the following parameters
 
@@ -69,42 +75,46 @@ class SectionsControllerIT  {
         mockMvc.perform(
                 post("/sections")
                         .sessionAttr("admin", admin)
-                        .param("sectionId", DEFAULT_SECTION_ID)
-                        .param("subjectId", DEFAULT_SUBJECT_ID)
-                        .param("days", MTH.name())
-                        .param("start", LocalTime.of(9, 0).toString())
-                        .param("end", LocalTime.of(10, 0).toString())
-                        .param("roomName", DEFAULT_ROOM_NAME)
+                        .param("sectionId", sectionId)
+                        .param("subjectId", subjectId)
+                        .param("days", days.name())
+                        .param("start", start)
+                        .param("end", end)
+                        .param("roomName", roomName)
                         .param("facultyNumber", String.valueOf(DEFAULT_FACULTY_NUMBER))
+
         );
 
         // Then the section table should contain a single record whose fields match the parameters
-        final String query = "SELECT COUNT(*) FROM section WHERE section_id = ? AND subject_subject_id = ? AND days = ? AND start_time = ? AND end_time = ? AND room_name = ? AND instructor_faculty_number = ?";
-        int actualCount = jdbcTemplate.queryForObject(
-                query,
-                Integer.class,
-                DEFAULT_SECTION_ID,
-                DEFAULT_SUBJECT_ID,
-                MTH.ordinal(),
-                LocalTime.of(9, 0),
-                LocalTime.of(10, 0),
-                DEFAULT_ROOM_NAME,
-                DEFAULT_FACULTY_NUMBER
-        );
-
-//        Map<String, Object> results = jdbcTemplate.queryForMap("SELECT * FROM section WHERE section_id = ?", DEFAULT_SECTION_ID);
-//        System.out.println(results);
-//        assertAll(
-//                () -> assertEquals(DEFAULT_SECTION_ID, results.get("section_id")),
-//                () -> assertEquals(DEFAULT_SUBJECT_ID, results.get("subject_subject_id")),
-//                () -> assertEquals(MTH.ordinal(), results.get("days")),
-//                () -> assertEquals(LocalTime.of(9, 0), LocalTime.parse(results.get("start_time").toString())),
-//                () -> assertEquals(LocalTime.of(10, 0), LocalTime.parse(results.get("end_time").toString())),
-//                () -> assertEquals(DEFAULT_ROOM_NAME, results.get("room_name")),
-//                () -> assertEquals(String.valueOf(DEFAULT_FACULTY_NUMBER), results.get("instructor_faculty_number"))
+//        final String query = "SELECT COUNT(*) FROM section WHERE section_id = ? AND subject_subject_id = ? AND days = ? AND start_time = ? AND end_time = ? AND room_name = ? AND instructor_faculty_number = ?";
+//        int actualCount = jdbcTemplate.queryForObject(
+//                query,
+//                Integer.class,
+//                DEFAULT_SECTION_ID,
+//                DEFAULT_SUBJECT_ID,
+//                MTH.ordinal(),
+//                LocalTime.of(9, 0),
+//                LocalTime.of(10, 0),
+//                DEFAULT_ROOM_NAME,
+//                DEFAULT_FACULTY_NUMBER
 //        );
 
-        assertEquals(1, actualCount);
+        Map<String, Object> results = jdbcTemplate.queryForMap("SELECT * FROM section WHERE section_id = ?", sectionId);
+        //params
+
+
+        System.out.println(results);
+        assertAll(
+                () -> assertEquals(sectionId, results.get("section_id")),
+                () -> assertEquals(subjectId, results.get("subject_subject_id")),
+                () -> assertEquals(days.ordinal(), results.get("days")),
+                () -> assertEquals(LocalTime.parse(start), LocalTime.parse(results.get("start_time").toString())),
+                () -> assertEquals(LocalTime.parse(end), LocalTime.parse(results.get("end_time").toString())),
+                () -> assertEquals(roomName, results.get("room_name")),
+                () -> assertEquals(DEFAULT_FACULTY_NUMBER, results.get("instructor_faculty_number"))
+        );
+
+//        assertEquals(1, actualCount);
     }
 
     private final static int FIRST_ADMIN_ID = 5;
