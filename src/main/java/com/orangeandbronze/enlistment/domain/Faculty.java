@@ -20,7 +20,7 @@ public class Faculty {
 
     Faculty(int facultyNumber, String firstname, String lastname) {
         isTrue (facultyNumber >= 0,
-                "studentNumber can't be negative, was: " + facultyNumber);
+                "facultyNumber can't be negative, was: " + facultyNumber);
         notBlank(firstname);
         notBlank(lastname);
 
