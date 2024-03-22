@@ -64,7 +64,7 @@ public class Faculty {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Faculty faculty = (Faculty) o;
-        return facultyNumber == faculty.facultyNumber && Objects.equals(firstname, faculty.firstname) && Objects.equals(lastname, faculty.lastname);
+        return facultyNumber == faculty.facultyNumber;
     }
 
     @Override
