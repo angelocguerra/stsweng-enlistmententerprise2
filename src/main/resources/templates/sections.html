@@ -174,12 +174,14 @@
                     <th>Subject</th>
                     <th>Schedule</th>
                     <th>Room</th>
+                    <th>Faculty</th>
                 </tr>
                 <tr th:each="section : ${sections}">
                     <td th:text="${section.sectionId}">XYZ</td>
                     <td th:text="${section.subject}">aaa</td>
                     <td th:text="${section.schedule}">bbb</td>
                     <td th:text="${section.room}">ccc</td>
+                    <td th:text="${section.instructor}">ddd</td>
                 </tr>
             </table>
         </div>
