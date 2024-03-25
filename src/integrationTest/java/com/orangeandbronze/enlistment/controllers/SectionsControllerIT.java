@@ -39,6 +39,9 @@ class SectionsControllerIT  {
     @Autowired
     private AdminRepository adminRepository;
 
+    @Autowired
+    private FacultyRepository facultyRepository;
+
     private final static String TEST = "test";
 
     @Container
@@ -69,12 +72,9 @@ class SectionsControllerIT  {
         jdbcTemplate.update("INSERT INTO faculty (faculty_number, firstname, lastname )VALUES (?, ?, ?)", DEFAULT_FACULTY_NUMBER, "firstname", "lastname");
 
         // When a post request on path /sections is invoked  with the admin in session and with the following parameters
-
-        //params
-        Admin admin = adminRepository.findById(1).orElseThrow(() -> new RuntimeException(""));
         mockMvc.perform(
                 post("/sections")
-                        .sessionAttr("admin", admin)
+                        .sessionAttr("admin", mock(Admin.class))
                         .param("sectionId", sectionId)
                         .param("subjectId", subjectId)
                         .param("days", days.name())
@@ -82,28 +82,10 @@ class SectionsControllerIT  {
                         .param("end", end)
                         .param("roomName", roomName)
                         .param("facultyNumber", String.valueOf(DEFAULT_FACULTY_NUMBER))
-
         );
 
         // Then the section table should contain a single record whose fields match the parameters
-//        final String query = "SELECT COUNT(*) FROM section WHERE section_id = ? AND subject_subject_id = ? AND days = ? AND start_time = ? AND end_time = ? AND room_name = ? AND instructor_faculty_number = ?";
-//        int actualCount = jdbcTemplate.queryForObject(
-//                query,
-//                Integer.class,
-//                DEFAULT_SECTION_ID,
-//                DEFAULT_SUBJECT_ID,
-//                MTH.ordinal(),
-//                LocalTime.of(9, 0),
-//                LocalTime.of(10, 0),
-//                DEFAULT_ROOM_NAME,
-//                DEFAULT_FACULTY_NUMBER
-//        );
-
         Map<String, Object> results = jdbcTemplate.queryForMap("SELECT * FROM section WHERE section_id = ?", sectionId);
-        //params
-
-
-        System.out.println(results);
         assertAll(
                 () -> assertEquals(sectionId, results.get("section_id")),
                 () -> assertEquals(subjectId, results.get("subject_subject_id")),
@@ -113,71 +95,36 @@ class SectionsControllerIT  {
                 () -> assertEquals(roomName, results.get("room_name")),
                 () -> assertEquals(DEFAULT_FACULTY_NUMBER, results.get("instructor_faculty_number"))
         );
-
-//        assertEquals(1, actualCount);
     }
 
-    private final static int FIRST_ADMIN_ID = 5;
-    private final static int NUMBER_OF_ADMIN = 5;
+    private final static int FIRST_ADMIN_ID = 1;
+    private final static int NUMBER_OF_ADMIN = 3;
     private final static int LAST_ADMIN_NUMBER = FIRST_ADMIN_ID + NUMBER_OF_ADMIN - 1;
 
-
-    private void insertManyAdmins() {
-        List<Object[]> admins = new ArrayList<>();
-        for (int i = FIRST_ADMIN_ID; i <= LAST_ADMIN_NUMBER; i++) {
-            admins.add(new Object[]{i, "firstname", "lastname"});
-        }
-        jdbcTemplate.batchUpdate("INSERT INTO admin(id, firstname, lastname) VALUES (?, ?, ?)", admins);
-    }
-
-    private void insertNewDefaultSection() {
-        final String roomName = "roomName";
-        jdbcTemplate.update("INSERT INTO room (name, capacity) VALUES (?, ?)", roomName, 20);
+    @Test
+    void concurrently_create_overlapping_section() throws Exception {
+        jdbcTemplate.update("INSERT INTO room (name, capacity) VALUES (?, ?)", "roomName", 20);
         jdbcTemplate.update("INSERT INTO subject (subject_id) VALUES (?)", DEFAULT_SUBJECT_ID);
-        jdbcTemplate.update(
-                "INSERT INTO section (section_id, number_of_students, days, start_time, end_time, room_name, subject_subject_id, version)" +
-                        " VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                DEFAULT_SECTION_ID, 0, Days.MTH.ordinal(), LocalTime.of(9, 0), LocalTime.of(10, 0), roomName, DEFAULT_SUBJECT_ID, 0);
+        startCreateSectionThreads(); // start multi threads
+        assertNumberOfSectionsCreated(3);    //check if multi threading was allowed by checking the number of sections created
     }
 
-    private void assertNumberOfSectionsCreatedByAdmin(int expectedCount, String sectionId) {
+    private void assertNumberOfSectionsCreated(int expectedCount) {
         int numSections = jdbcTemplate.queryForObject(
-                "select count(*) from section where section_id = '" +
-                        sectionId + "'", Integer.class);
+                "SELECT COUNT(*) FROM room_sections WHERE room_name = 'roomName'", Integer.class);
         assertEquals(expectedCount, numSections);
     }
 
-    @Test
-    void admins_create_existing_section_concurrently() throws Exception {
-        // Given 5 admins and a section
-        insertManyAdmins();
-        insertNewDefaultSection();
-        // When the admins create existing section concurrently
-        startCreateSectionThreads(DEFAULT_SECTION_ID);
-        // Then no extra sections will be created
-        assertNumberOfSectionsCreatedByAdmin(1, DEFAULT_SECTION_ID);
-    }
-
-
-//    @Test
-//    void admins_create_new_section_concurrently() throws Exception {
-//        // Given 5 admins and a section
-//        final String sectionId = "SEC";
-//        insertManyAdmins();
-//        insertNewDefaultSection();
-//        // When the admins create existing section concurrently
-//        startCreateSectionThreads(sectionId);
-//        // Then only one section will be created
-//        assertNumberOfSectionsCreatedByAdmin(1, sectionId);
-//    }
-
-    private void startCreateSectionThreads(String sectionId) throws Exception {
+    private void startCreateSectionThreads() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
         for (int i = FIRST_ADMIN_ID; i <= LAST_ADMIN_NUMBER; i++) {
-            final int adminId = i;
-            new CreateSectionThread(adminRepository.findById(adminId).orElseThrow(() ->
-                    new NoSuchElementException("No admin w/ admin id " + adminId + " found in DB.")),
-                    latch, mockMvc, sectionId).start();
+            final int id = i;
+            new CreateSectionThread(
+                    adminRepository.findById(id).orElseThrow(() ->
+                            new NoSuchElementException("No such admin w/ id: " + id + " found in DB.")),
+                    facultyRepository.findById(id).orElseThrow(() ->
+                            new NoSuchElementException("No such faculty w/ id: " + id + " found in DB.")),
+                    latch, mockMvc,Integer.toString(i)).start();
         }
         latch.countDown();
         Thread.sleep(5000); // wait time to allow all the threads to finish
@@ -185,12 +132,14 @@ class SectionsControllerIT  {
 
     private static class CreateSectionThread extends Thread {
         private final Admin admin;
+        private final Faculty faculty;
         private final CountDownLatch latch;
         private final MockMvc mockMvc;
         private final String sectionId;
 
-        public CreateSectionThread(Admin admin, CountDownLatch latch, MockMvc mockMvc, String sectionId) {
+        public CreateSectionThread(Admin admin, Faculty faculty, CountDownLatch latch, MockMvc mockMvc, String sectionId) {
             this.admin = admin;
+            this.faculty = faculty;
             this.latch = latch;
             this.mockMvc = mockMvc;
             this.sectionId = sectionId;
@@ -206,7 +155,7 @@ class SectionsControllerIT  {
                         .param("days", "WS")
                         .param("start", "10:00").param("end", "11:30")
                         .param("roomName", "roomName")
-                        .param("facultyNumber", String.valueOf(DEFAULT_FACULTY_NUMBER)));
+                        .param("facultyNumber", String.valueOf(faculty.getFacultyNumber())));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
